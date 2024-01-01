@@ -1109,7 +1109,6 @@ INDEX name1_name2_name3_index (name, name2, name3)     # Menambahkan index pada 
 ) ENGINE = InnoDB;
 ```
 
-
 ### Menambah/Menghapus Index
 
 ```sql
@@ -1123,17 +1122,20 @@ DROP INDEX name_index;
 ## Full Text Search
 
 ### Masalah dengan LIKE operator
-- Kadang kita ingin mencari sebuah kata dalam tabel, dan biasanya kita akan menggunakan LIKE operator
-- Operasi yang dilakukan LIKE operator adalah dengan cara mencari seluruh data di tabel dari baris pertama sampai terakhir, hal ini membuat operasi LIKE sangat lambat
-- Menambah index di tabel juga tidak akan membantu, karena LIKE operator tidak menggunakan index
-- MySQL menyediakan fitur Full Text Search jika ada kasus kita ingin melakukan hal ini
-  
+
+-   Kadang kita ingin mencari sebuah kata dalam tabel, dan biasanya kita akan menggunakan LIKE operator
+-   Operasi yang dilakukan LIKE operator adalah dengan cara mencari seluruh data di tabel dari baris pertama sampai terakhir, hal ini membuat operasi LIKE sangat lambat
+-   Menambah index di tabel juga tidak akan membantu, karena LIKE operator tidak menggunakan index
+-   MySQL menyediakan fitur Full Text Search jika ada kasus kita ingin melakukan hal ini
+
 ### Full-Text Search
-- Full-Text Search memungkinkan kita bisa mencari sebagian kata di kolom dengan tipe data String
-- Ini sangat cocok ketika pada kasus kita memang membutuhkan pencarian yang tidak hanya sekedar operasi = (equlas, sama dengan)
-- https://dev.mysql.com/doc/refman/8.0/en/fulltext-search.html
+
+-   Full-Text Search memungkinkan kita bisa mencari sebagian kata di kolom dengan tipe data String
+-   Ini sangat cocok ketika pada kasus kita memang membutuhkan pencarian yang tidak hanya sekedar operasi = (equlas, sama dengan)
+-   https://dev.mysql.com/doc/refman/8.0/en/fulltext-search.html
 
 ### Membuat Table dengan Full-Text Search
+
 ```sql
 CREATE TABLE products
 (
@@ -1149,6 +1151,7 @@ CREATE TABLE products
 ```
 
 ### Menambah / Menghapus Full-Text Search
+
 ```sql
 ALTER TABLE products
     ADD FULLTEXT product_search (name, description);
@@ -1158,12 +1161,15 @@ ALTER TABLE products
 ```
 
 ### Mode Full-Text Search
+
 MySQL menyediakan beberapa mode untuk melakukan pencarian di Full-Text Search, kita bisa memilihnya sesuai kebutuhan kita
-- Natural Language, yaitu mencari seperti bahasa natural (per kata) : https://dev.mysql.com/doc/refman/8.0/en/fulltext-natural-language.html 
-- Boolean, yaitu mencari dengan kemampuan mengandung kata (+) atau tidak mengandung kata (-) dan lain-lain : https://dev.mysql.com/doc/refman/8.0/en/fulltext-boolean.html 
-- Query Expansion, yaitu mencari seperti natural language, namun melakukan dua kali pencarian, pencarian pertama menggunakan natural language, pencarian kedua melakukan pencarian dari kedekatan hasil pertama, misal kita mencari kata “bakso”, lalu ternyata di dalam “bakso” ada kata “mie”, maka kemungkinan query kedua akan mencari kata “mie” juga : https://dev.mysql.com/doc/refman/8.0/en/fulltext-query-expansion.html 
+
+-   Natural Language, yaitu mencari seperti bahasa natural (per kata) : https://dev.mysql.com/doc/refman/8.0/en/fulltext-natural-language.html
+-   Boolean, yaitu mencari dengan kemampuan mengandung kata (+) atau tidak mengandung kata (-) dan lain-lain : https://dev.mysql.com/doc/refman/8.0/en/fulltext-boolean.html
+-   Query Expansion, yaitu mencari seperti natural language, namun melakukan dua kali pencarian, pencarian pertama menggunakan natural language, pencarian kedua melakukan pencarian dari kedekatan hasil pertama, misal kita mencari kata “bakso”, lalu ternyata di dalam “bakso” ada kata “mie”, maka kemungkinan query kedua akan mencari kata “mie” juga : https://dev.mysql.com/doc/refman/8.0/en/fulltext-query-expansion.html
 
 ### Mencari dengan Natural Languagen Mode
+
 ```sql
 FROM products
 WHERE MATCH(name, description)
@@ -1171,6 +1177,7 @@ WHERE MATCH(name, description)
 ```
 
 ### Mencari dengan Boolean Mode
+
 ```sql
 SELECT *
 FROM products
@@ -1179,6 +1186,7 @@ WHERE MATCH(name, description)
 ```
 
 ### Mencari dengan Query Expansion Mode
+
 ```sql
 SELECT *
 FROM products
@@ -1189,21 +1197,24 @@ WHERE MATCH(name, description)
 ## Table Relationship
 
 ### Table Relationship
-- Dalam Relational DBMS, salah satu fitur andalan nya adalah table relationship. Yaitu relasi antar tabel
-- Kita bisa melakukan relasi dari satu tabel ke tabel lain.
-- Dalam kehidupan nyata pun pasti kita akan sering membuat relasi antar tabel
-- Misal, saat kita membuat aplikasi penjualan, di laporan penjualan pasti ada data barang. Jika di tabel artinya tabel penjualan akan berelasi dengan tabel barang
-- Misal dalam aplikasi kampus, tabel mahasiswa akan berelasi dengan tabel mata kuliah, dan tabel dosen
-- Dan lain-lain
+
+-   Dalam Relational DBMS, salah satu fitur andalan nya adalah table relationship. Yaitu relasi antar tabel
+-   Kita bisa melakukan relasi dari satu tabel ke tabel lain.
+-   Dalam kehidupan nyata pun pasti kita akan sering membuat relasi antar tabel
+-   Misal, saat kita membuat aplikasi penjualan, di laporan penjualan pasti ada data barang. Jika di tabel artinya tabel penjualan akan berelasi dengan tabel barang
+-   Misal dalam aplikasi kampus, tabel mahasiswa akan berelasi dengan tabel mata kuliah, dan tabel dosen
+-   Dan lain-lain
 
 ### Foreign Key
-- Saat membuat relasi tabel, biasanya kita akan membuat sebuah kolom sebagai referensi ke tabel lainnya
-- Misal saat kita membuat tabel penjualan, di dalam tabel penjualan, kita akan menambahkan kolom id_produk sebagai referensi ke tabel produk, yang berisi primary key di tabel produk
-- Kolom referensi ini di MySQL dinamakan Foreign Key
-- Kita bisa menambah satu satu lebih foreign key ke dalam sebuah tabel
-- Membuat foreign key sama seperti membuat kolom biasanya, hanya saja kita perlu memberi tahu MySQL bahwa itu adalah foreign key ke tabel lain
+
+-   Saat membuat relasi tabel, biasanya kita akan membuat sebuah kolom sebagai referensi ke tabel lainnya
+-   Misal saat kita membuat tabel penjualan, di dalam tabel penjualan, kita akan menambahkan kolom id_produk sebagai referensi ke tabel produk, yang berisi primary key di tabel produk
+-   Kolom referensi ini di MySQL dinamakan Foreign Key
+-   Kita bisa menambah satu satu lebih foreign key ke dalam sebuah tabel
+-   Membuat foreign key sama seperti membuat kolom biasanya, hanya saja kita perlu memberi tahu MySQL bahwa itu adalah foreign key ke tabel lain
 
 ### Membuat Table dengan Foreign Key
+
 ```sql
 CREATE TABLE wishlist
 (
@@ -1217,6 +1228,7 @@ CREATE TABLE wishlist
 ```
 
 ### Menambah/Menghapus Foreign Key
+
 ```sql
 ALTER TABLE wishlist
     DROP CONSTRAINT fk_wishlist_product;
@@ -1227,20 +1239,70 @@ ALTER TABLE wishlist
 ```
 
 ### Keuntungan Menggunakan Foreign Key
-- Foreign key memastikan bahwa data yang kita masukkan ke kolom tersebut harus tersedia di tabel reference nya
-- Selain itu saat kita menghapus data di tabel reference, MySQL akan mengecek apakah id nya digunakan di foreign key di tabel lain, jika digunakan, maka secara otomatis MySQL akan menolak proses delete data di tabel reference tersebut
 
-### 
+-   Foreign key memastikan bahwa data yang kita masukkan ke kolom tersebut harus tersedia di tabel reference nya
+-   Selain itu saat kita menghapus data di tabel reference, MySQL akan mengecek apakah id nya digunakan di foreign key di tabel lain, jika digunakan, maka secara otomatis MySQL akan menolak proses delete data di tabel reference tersebut
 
-### 
+### Ketika Menghapus Data Berelasi
 
-##
+-   Seperti yang sebelumnya dibahas, ketika kita menghapus data yang berelasi, maka secara otomatis MySQL akan menolak operasi delete tersebut
+-   Kita bisa mengubah fitur ini jika kita mau, ada banyak hal yang bisa dilakukan ketika data berelasi dihapus, defaultnya memang akan ditolak (RESTRICT)
 
-###
+### Behavior Foreign Key
 
-###
+| Behavior  | ON DELETE         | ON UPDATE             |
+| :-------- | :---------------- | :-------------------- |
+| RESTRICT  | Ditolak           | Ditolak               |
+| CASCADE   | Data akan dihapus | Data akan ikut diubah |
+| NO ACTION | Data Dibiarkan    | Data dibiarkan        |
+| SET NULL  | Diubah jadi NULL  | Diubah jadi NULL      |
 
-###
+### Mengubah Behavior Menghapus Relasi
+```sql
+ALTER TABLE wishlist
+    ADD CONSTRAINT fk_wishlist_product
+        FOREIGN KEY (id_product) REFERENCES products (id)
+            ON DELETE CASCADE ON UPDATE CASCADE;
+```
+
+## Join
+
+### Join
+- MySQL mendukung query SELECT langsung ke beberapa tabel secara sekaligus
+- Namun untuk melakukan itu, kita perlu melakukan JOIN di SQL SELECT yang kita buat
+- Untuk melakukan JOIN, kita perlu menentukan tabel mana yang merupakan referensi ke tabel lain
+- Join cocok sekali dengan foreign key, walaupun di MySQL tidak ada aturan kalau JOIN harus ada foreign key
+- Join di MySQL bisa dilakukan untuk lebih dari beberapa tabel
+- Tapi ingat, semakin banyak JOIN, maka proses query akan semakin berat dan lambat, jadi harap bijak ketika melakukan JOIN
+- Idealnya kita melakukan JOIN jangan lebih dari 5 tabel, karena itu bisa berdampak ke performa query yang lambat
+
+### Melakukan JOIN Table
+```sql
+SELECT * FROM wishlist
+JOIN products ON (wishlist.id_product = products.id);
+
+SELECT products.id, products.name, wishlist.description
+FROM wishlist
+JOIN products ON (products.id = wishlist.id_product);
+```
+
+### Membuat Relasi ke Table Customers
+```sql
+ALTER TABLE wishlist
+    ADD COLUMN id_customer INT;
+
+ALTER TABLE wishlist
+ADD CONSTRAINT fk_wishlist_customer
+FOREIGN KEY (id_customer) REFERENCES cutomers(id);
+```
+
+### Melakukan JOIN Multiple Table
+```sql
+SELECT customers.email, products.id, products.name, wishlist.description
+FROM wishlist
+JOIN products ON (products.id = wishlist.id_product)
+JOIN customers ON (customers.id = wishlist.id_customer);
+```
 
 ##
 

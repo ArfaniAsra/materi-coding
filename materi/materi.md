@@ -1146,7 +1146,7 @@ CREATE TABLE products
     quantity    INT UNSIGNED NOT NULL DEFAULT 0,
     created_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
-    FULLTEXT product_search (name, description)
+    FULLTEXT product_search (name, description) # Menambahkan fitur Full-Text
 ) ENGINE = InnoDB;
 ```
 
@@ -1209,7 +1209,7 @@ WHERE MATCH(name, description)
 
 -   Saat membuat relasi tabel, biasanya kita akan membuat sebuah kolom sebagai referensi ke tabel lainnya
 -   Misal saat kita membuat tabel penjualan, di dalam tabel penjualan, kita akan menambahkan kolom id_produk sebagai referensi ke tabel produk, yang berisi primary key di tabel produk
--   Kolom referensi ini di MySQL dinamakan Foreign Key
+-   Kolom referensi ini di MySQL dinamakan **Foreign Key**
 -   Kita bisa menambah satu satu lebih foreign key ke dalam sebuah tabel
 -   Membuat foreign key sama seperti membuat kolom biasanya, hanya saja kita perlu memberi tahu MySQL bahwa itu adalah foreign key ke tabel lain
 
@@ -1258,6 +1258,7 @@ ALTER TABLE wishlist
 | SET NULL  | Diubah jadi NULL  | Diubah jadi NULL      |
 
 ### Mengubah Behavior Menghapus Relasi
+
 ```sql
 ALTER TABLE wishlist
     ADD CONSTRAINT fk_wishlist_product
@@ -1268,15 +1269,17 @@ ALTER TABLE wishlist
 ## Join
 
 ### Join
-- MySQL mendukung query SELECT langsung ke beberapa tabel secara sekaligus
-- Namun untuk melakukan itu, kita perlu melakukan JOIN di SQL SELECT yang kita buat
-- Untuk melakukan JOIN, kita perlu menentukan tabel mana yang merupakan referensi ke tabel lain
-- Join cocok sekali dengan foreign key, walaupun di MySQL tidak ada aturan kalau JOIN harus ada foreign key
-- Join di MySQL bisa dilakukan untuk lebih dari beberapa tabel
-- Tapi ingat, semakin banyak JOIN, maka proses query akan semakin berat dan lambat, jadi harap bijak ketika melakukan JOIN
-- Idealnya kita melakukan JOIN jangan lebih dari 5 tabel, karena itu bisa berdampak ke performa query yang lambat
+
+-   MySQL mendukung query SELECT langsung ke beberapa tabel secara sekaligus
+-   Namun untuk melakukan itu, kita perlu melakukan `JOIN` di SQL SELECT yang kita buat
+-   Untuk melakukan JOIN, kita perlu menentukan tabel mana yang merupakan referensi ke tabel lain
+-   Join cocok sekali dengan foreign key, walaupun di MySQL tidak ada aturan kalau JOIN harus ada foreign key
+-   Join di MySQL bisa dilakukan untuk lebih dari beberapa tabel
+-   Tapi ingat, semakin banyak JOIN, maka proses query akan semakin berat dan lambat, jadi harap bijak ketika melakukan JOIN
+-   Idealnya kita melakukan JOIN jangan lebih dari 5 tabel, karena itu bisa berdampak ke performa query yang lambat
 
 ### Melakukan JOIN Table
+
 ```sql
 SELECT * FROM wishlist
 JOIN products ON (wishlist.id_product = products.id);
@@ -1287,6 +1290,7 @@ JOIN products ON (products.id = wishlist.id_product);
 ```
 
 ### Membuat Relasi ke Table Customers
+
 ```sql
 ALTER TABLE wishlist
     ADD COLUMN id_customer INT;
@@ -1297,6 +1301,7 @@ FOREIGN KEY (id_customer) REFERENCES cutomers(id);
 ```
 
 ### Melakukan JOIN Multiple Table
+
 ```sql
 SELECT customers.email, products.id, products.name, wishlist.description
 FROM wishlist
@@ -1304,138 +1309,623 @@ JOIN products ON (products.id = wishlist.id_product)
 JOIN customers ON (customers.id = wishlist.id_customer);
 ```
 
-##
+## One to One Relationship
 
-###
+### Jenis-Jenis Relasi Tabel
 
-###
+-   Sekarang kita sudah tau untuk melakukan relasi antar tabel, kita bisa menggunakan FOREIGN KEY
+-   Dan untuk melakukan SELECT beberapa tabel, kita bisa menggunakan JOIN
+-   Dalam konsep relasi, ada banyak jenis-jenis relasi antar tabel
+-   Sekarang kita akan bahas dari yang pertama yaitu One to One relationship
 
-###
+### One to One Relationship
 
-##
+-   One to One relationship adalah relasi antar tabel yang paling sederhana
+-   Artinya tiap data di sebuah tabel hanya boleh berelasi ke maksimal 1 data di tabel lainnya
+-   Tidak boleh ada relasi lebih dari 1 data
+-   Contoh misal, kita membuat aplikasi toko online yang terdapat fitur wallet, dan 1 customer, cuma boleh punya 1 wallet
 
-###
+### Diagram One to One Relationship
 
-###
+<figure>
+    <img src="image-3.png" alt="Diagram One to One Relationship" width="500">
+    <figcaption>Diagram One to One Relationship</figcaption>
+</figure>
 
-###
+### Membuat One to One Relationship
 
-##
+-   Cara membuat One to One relationship cukup mudah
+-   Kita bisa membuat kolom foreign key, lalu set kolom tersebut menggunakan **UNIQUE KEY**, hal ini dapat mencegah terjadi data di kolom tersebut agar tidak duplikat
+-   Atau cara lainnya, kita bisa membuat tabel dengan primary key yang sama, sehingga tidak butuh lagi kolom untuk FOREIGN KEY
 
-###
+### Membuat Table Wallet
 
-###
+```sql
+CREATE TABLE wallet
+(
+    id          INT NOT NULL AUTO_INCREMENT,
+    id_customer INT NOT NULL,
+    balance     INT NOT NULL DEFAULT 0,
+    PRIMARY KEY (id),
+    UNIQUE KEY fk_id_customer_unique (id_customer),
+    CONSTRAINT fk_wallet_customer
+        FOREIGN KEY (id_customer) REFERENCES customers (id)
+) ENGINE = InnoDB;
+```
 
-###
+## One to Many Relationship
 
-##
+### One to Many Relationship
 
-###
+-   One to many relationship adalah relasi antar tabel dimana s atu data bisa digunakan lebih dari satu kali di tabel relasinya
+-   Berbeda dengan one to one yang cuma bisa digunakan maksimal 1 kali di tabel relasinya, one to many tidak ada batasan berapa banyak data digunakan
+-   Contoh relasi antar tabel categories dan products, dimana satu category bisa digunakan oleh lebih dari satu product, yang artinya relasinya nya one category to many products
+-   Pembuatan relasi one to many sebenarnya sama dengan one to one, yang membedakan adalah, kita tidak perlu menggunakan UNIQUE KEY, karena datanya memang bisa berkali-kali ditambahkan di tabel relasi nya
 
-###
+### Diagram One to Many Relationship
 
-###
+<figure>
+    <img src="image-4.png" alt="Diagram One to Many Relationship" width="500">
+    <figcaption>Diagram One to Many Relationship</figcaption>
+</figure>
 
-##
+### Membuat Table Category
 
-###
+```sql
+CREATE TABLE categories
+(
+    id          VARCHAR(10)     NOT NULL,
+    name        VARCHAR(100)    NOT NULL
+    PRIMARY KEY (id)
+) ENGINE = InnoDB;
+```
 
-###
+### Mengubah Table Product
 
-###
+```sql
+ALTER TABLE products
+    DROP column category;
 
-##
+ALTER TABLE products
+    ADD COLUMN id_category VARCHAR(100);
 
-###
+ALTER TABLE products
+    ADD CONSTRAINT fk_product_category
+        FOREIGN KEY (id_category) REFERENCES categories (id);
+```
 
-###
+## Many to Many Relationship
 
-###
+### Many to Many Relationship
 
-##
+-   Many to Many adalah table relationship yang paling kompleks, dan kadang membingungkan untuk pemula
+-   Many to Many adalah relasi dimana ada relasi antara 2 tabel dimana table pertama bisa punya banyak relasi di table kedua, dan table kedua pun punya banyak relasi di table pertama
+-   Ini memang sedikit membingungkan, bagaimana caranya bisa relasi kebanyakan secara bolak balik, sedangkan di table kita cuma punya 1 kolom?
+-   Contoh relasi many to many adalah relasi antara produk dan penjualan, dimana setiap produk bisa dijual berkali kali, dan setiap penjualan bisa untuk lebih dari satu produk
 
-###
+### Diagram Many to Many Relationship
 
-###
+<figure>
+    <img src="image-5.png" alt="Diagram Many to Many Relationship" width="500">
+    <figcaption>Diagram Many to Many Relationship</figcaption>
+</figure>
 
-###
+### Bagaimana Implementasi Many to Many?
 
-##
+-   Sekarang pertanyaannya, bagaimana implementasi many to many?
+-   Apakah kita harus menambahkan id_order di table products? atau id_product di table orders?
 
-###
+### Id Product di Table Order
 
-###
+-   Jika kita menambahkan id_product di table orders, artinya sekarang sudah benar, bahwa 1 product bisa dijual berkali-kali
+-   Namun masalahnya adalah, berarti 1 order hanya bisa membeli 1 product, karena cuma ada 1 kolom untuk id_product
+-   Oke kalo gitu kita tambahkan id_product1, id_product2, dan seterusnya. Solusi ini bisa dilakukan, tapi tidak baik, artinya akan selalu ada maksimal barang yang bisa kita beli dalam satu order
 
-###
+### Id Order di Table Product
 
-##
+-   Jika kita tambahkan id_order di table products, artinya sekarang 1 order bisa membeli lebih dari 1 product, oke sudah benar
+-   Tapi sayangnya masalahnya terbalik sekarang, 1 product cuma bisa dijual satu kali, tidak bisa dijual berkali-kali, karena kolom id_order nya cuma 1
+-   Kalupun kita tambah id_order1, id_order2 dan seterusnya di table product, tetap ada batasan maksimal nya
+-   Lantas bagaimana solusinya untuk relasi many to many?
 
-###
+### Membuat Table Relasi
 
-###
+-   Solusi yang biasa dilakukan jika terjadi relasi many to many adalah, biasanya kita akan menambah 1 tabel ditengahnya
+-   Tabel ini bertugas sebagai jembatan untuk menggabungkan relasi many to many
+-   Isi table ini akan ada id dari table pertama dan table kedua, dalam kasus ini adalah id_product dan id_order
+-   Dengan demikian, kita bisa menambahkan beberapa data ke dalam tabel relasi ini, sehingga berarti satu product bisa dijual beberapa kali di dalam table order, dan satu order bisa membeli lebih dari satu product
 
-###
+### Diagram Many to Many Relationship
 
-##
+<figure>
+    <img src="image-6.png" alt="Diagram Many to Many Relationship" width="500">
+    <figcaption>Diagram Many to Many Relationship</figcaption>
+</figure>
 
-###
+### Membuat Table Order
 
-###
+```sql
+CREATE TABLE orders
+(
+    id          INT         NOT NULL AUTO_INCREMENT,
+    total       INT         NOT NULL,
+    order_date  DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+) ENGINE InnoDB;
+```
 
-###
+### Membuat Table Order lDetai
 
-##
+```sql
+CREATE TABLE orders_detail
+(
+    id_product  VARCHAR(10) NOT NULL,
+    id_order    INT         NOT NULL,
+    price       INT         NOT NULL,
+    quantity    INT         NOT NULL,
+    PRIMARY KEY (id_product, id_order),
+) ENGINE = InnoDB;
+```
 
-###
+### Membuat Foreign Key
 
-###
+```sql
+ALTER TABLE orders_detail
+    ADD CONSTRAINT fk_orders_detail_product
+        FOREIGN KEY (id_product) REFERENCES products (id);
 
-###
+ALTER TABLE orders_detail
+    ADD CONSTRAINT fk_orders_detail_order
+        FOREIGN KEY (id_order) REFERENCES orders (id);
+```
 
-##
+### Melihat Data Order, Detail, dan Product-nya
 
-###
+```sql
+SELECT *
+FROM orders
+        JOIN orders_detail ON (orders_detail.id_order = orders.id)
+        JOIN product ON (products.id = orders_detail.id_product);
+```
 
-###
+## Jenis-Jenis Join
 
-###
+### Jenis-Jenis Join
 
-##
+Sebelumnya kita sudah bahas tentang JOIN table, tapi sebenarnya ada banyak sekali jenis-jenis JOIN table di MySQL, diantaranya :
 
-###
+-   INNER JOIN
+-   LEFT JOIN
+-   RIGHT JOIN
+-   CROSS JOIN
 
-###
+### Inner Join (Default)
 
-###
+-   INNER JOIN adalah mekanisme JOIN, dimana terdapat relasi antara tabel pertama dan tabel kedua
+-   Jika ada data di tabel pertama yang tidak memiliki relasi di table kedua ataupun sebaliknya, maka hasil INNER JOIN tidak akan ditampilkan
+-   Ini adalah default JOIN di MySQL
+-   Jika kita menggunakan JOIN seperti yang sudah kita praktekan sebelumnya, sebenarnya itu akan melakukan INNER JOIN
 
-##
+### Inner Join Diagram
 
-###
+<figure>
+    <img src="image-7.png" alt="Inner Join Diagram" width="500">
+    <figcaption>Inner Join Diagram</figcaption>
+</figure>
 
-###
+### Melakukan Inner Join
 
-###
+```sql
+SELECT * FROM categories
+INNER JOIN products ON (products.id_category = categories.id);
+```
 
-##
+### Left Join
 
-###
+-   LEFT JOIN adalah mekanisme JOIN seperti INNER JOIN, namun semua data di table pertama akan diambil juga
+-   Jika ada yang tidak memiliki relasi di table kedua, maka hasilnya akan NULL
 
-###
+### Left Join Diagram
 
-###
+<figure>
+    <img src="image-8.png" alt="Left Join Diagram" width="500">
+    <figcaption>Left Join Diagram</figcaption>
+</figure>
 
-##
+### Melakukan Left Join
 
-###
+```sql
+SELECT * FROM categories
+LEFT JOIN products ON (products.id_category = categories.id);
+```
 
-###
+### Right Join
 
-###
+-   RIGHT JOIN adalah mekanisme JOIN seperti INNER JOIN, namun semua data di table kedua akan diambil juga
+-   Jika ada yang tidak memiliki relasi di table pertama, maka hasilnya akan NULL
 
-##
+### Right Join Diagram
 
-###
+<figure>
+    <img src="image-9.png" alt="Right Join Diagram" width="500">
+    <figcaption>Right Join Diagram</figcaption>
+</figure>
 
-###
+### Melakukan Right Join
 
-###
+```sql
+SELECT * FROM categories
+RIGHT JOIN products ON (products.id_category = categories.id);
+```
+
+### Cross Join
+
+-   CROSS JOIN adalah salah satu JOIN yang sangat jangan sekali digunakan
+-   CROSS JOIN adalah melakukan join dengan cara mengkalikan data di tabel pertama dengan dada di table kedua
+-   Artinya jika ada 5 data di tabel pertama, dan 5 data di tabel kedua, akan menghasilkan 25 kombinasi data (5 x 5)
+-   Sekali lagi perlu diingat, ini adalah JOIN yang sangat jarang sekali digunakan
+
+### Menggunakan Cross Join
+
+```sql
+SELECT * FROM categories
+CROSS JOIN products;
+```
+
+### Membuat Tabel Perkalian
+
+```sql
+CREATE TABLE numbers
+(
+    id INT NOT NULL,
+    PRIMARY KEY (id)
+) ENGINE = InnoDB;
+```
+
+### Cross Join Tabel Perkalian
+
+```sql
+SELECT number1.id, number2.id, (number1.id * number2.id) as result
+FROM numbers as number1
+        CROSS JOIN numbers as number2
+ORDER BY number1.id, number2.id;
+```
+
+## Subquery
+
+### Subquery di WHERE
+
+-   MySQL mendukung pencarian data menggunakan WHERE dari hasil SELECT query
+-   Fitur ini dinamakan **Subquery**
+-   Contoh, kita ingin mencari products yang harganya diatas harga rata-rata, artinya kita akan melakukan SELECT dengan WHERE price > harga rata, dimana harga rata-rata perlu kita hitung menggunakan query SELECT lainnya menggunakan aggregate function AVG
+
+### Melakukan Subquery di WHERE Clause
+
+```sql
+SELECT *
+FROM products
+WHERE price > (SELECT AVG(price) FROM products);
+```
+
+### Subquery di FROM
+
+-   Selain di WHERE clause, Subquery juga bisa dilakukan di FROM clause
+-   Misal kita ingin mencari data dari hasil query SELECT, itu bisa kita lakukan di MySQL
+
+### Melakukan Subquery di FROM Clause
+
+```sql
+SELECT MAX(price)
+FROM (SELECT price
+      FROM categories
+                INNER JOIN products
+                           ON (products.id_category = categories.id)) as cp;
+```
+
+## Set Operator
+
+### Set Operator
+
+MySQL mendukung operator Set, dimana ini adalah operasi antara hasil dari dua SELECT query. Ada banyak jenis operator Set, yaitu :
+
+-   UNION
+-   UNION ALL
+-   INTERSECT, dan
+-   MINUS
+
+### Membuat Table Guest Book
+
+```sql
+CREATE TABLE guestbooks
+(
+    id          INT             NOT NULL AUTO_INCREMENT,
+    email       VARCHAR(100)    NOT NULL,
+    title       VARCHAR(200)    NOT NULL,
+    content     TEXT,
+    PRIMARY KEY (id)
+) ENGINE = InnoDB;
+```
+
+### UNION
+
+-   UNION adalah operasi menggabungkan dua buah SELECT query, dimana jika terdapat data yang duplikat, data duplikatnya akan dihapus dari hasil query
+
+### Diagram UNION
+
+<figure>
+    <img src="image-10.png" alt="Diagram UNION" width="500">
+    <figcaption>Diagram UNION</figcaption>
+</figure>
+
+### Melakukan Query UNION
+
+```sql
+SELECT DISTINCT email FROM customers
+UNION
+SELECT DISTINCT email FROM guestbooks;
+```
+
+### UNION ALL
+
+-   UNION ALL adalah operasi yang sama dengan UNION, namun **data duplikat tetap akan ditampilkan** di hasil query nya
+
+### Diagram UNION ALL
+
+<figure>
+    <img src="image-11.png" alt="Diagram UNION ALL" width="500">
+    <figcaption>Diagram UNION ALL</figcaption>
+</figure>
+
+### Melakukan Query UNION ALL
+
+```sql
+SELECT DISTINCT email FROM customers
+UNION ALL
+SELECT DISTINCT email FROM guestbooks;
+
+SELECT email, COUNT(email)
+FROM (SELECT DISTICT email FROM customers
+      UNION ALL
+      SELECT DISTINCT email FROM guestbooks) as emails
+GROUP BY email;
+```
+
+### INTERSECT
+
+-   INTERSECT adalah operasi menggabungkan dua query, namun yang diambil hanya data yang terdapat pada hasil query pertama dan query kedua
+-   Data yang tidak hanya ada di salah satu query, kan dihapus di hasil operasi INTERSECT
+-   Data nya muncul tidak dalam keadaan duplikat
+-   Sayangnya, MySQL tidak memiliki operator INTERSECT, dengan demikian untuk melakukan operasi INTERSECT, kita harus lakukan secara manual menggunakan JOIN atau SUBQUERY
+
+### Diagram INTERSECT
+
+<figure>
+    <img src="image-12.png" alt="Diagram INTERSECT" width="500">
+    <figcaption>Diagram INTERSECT</figcaption>
+</figure>
+
+### Melakukan Query INTERSECT
+
+```sql
+SELECT DISTINCT email FROM customers
+WHERE email IN (SELECT DISTINCT email FROM guestbooks);
+
+SELECT DISTINCT customers.email FROM customers
+INNER JOIN guestbook ON (guestbooks.email = customers.email);
+```
+
+### MINUS
+
+-   MINUS adalah operasi dimana query pertama akan dihilangkan oleh query kedua
+-   Artinya jika ada data di query pertama yang sama dengan data yang ada di query kedua, maka data tersebut akan dihapus dari hasil query MINUS
+-   Sayang nya, di MySQL juga tidak ada operator MINUS, namun hal ini bisa kita lakukan menggunakan JOIN
+
+### Diagram MINUS
+
+<figure>
+    <img src="image-13.png" alt="Diagram MINUS" width="500">
+    <figcaption>Diagram MINUS</figcaption>
+</figure>
+
+### Melakukan Query MINUS
+
+```sql
+SELECT DISTINCT customers.email, guestbooks.email FROM customers
+LEFT JOIN guestbooks ON (guestbooks.email = customers.email)
+WHERE guestbooks.email IS NULL;
+```
+
+## Transaction
+
+### Kenapa Butuh Transaction?
+
+-   Saat membuat aplikasi berbasis database, jarang sekali kita akan melakukan satu jenis perintah SQL per aksi yang dibuat aplikasi
+-   Contoh, ketika membuat toko online, ketika customer menekan tombol Pesan, banyak yang harus kita lakukan, misal
+    -   Membuat data pesanan di tabel order
+    -   Membuat data detail pesanan di tabel order detail
+    -   Menurunkan quantity di tabel produk
+    -   Dan yang lainnya
+-   Artinya, bisa saja dalam satu aksi, kita akan melakukan beberapa perintah sekaligus
+-   Jika terjadi kesalahan di salah satu perintah, harapannya adalah perintah-perintah sebelumnya dibatalkan, agar data tetap konsisten
+
+### Database Transaction
+
+-   Database transaction adalah fitur di DBMS dimana kita bisa memungkinkan beberapa perintah dianggap menjadi sebuah kesatuan perinah yang kita sebut transaction
+-   Jika terdapat satu saja proses gagal di transaction, maka secara otomatis perintah-perintah sebelumnya akan dibatalkan
+-   Jika sebuah transaction sukses, maka semua perintah akan dipastikan sukses
+
+### Membuat Transaction
+
+<figure>
+    <img src="image-14.png" alt="Membuat transaction" width="900">
+    <figcaption>Membuat transaction</figcaption>
+</figure>
+
+### Membatalkan Transaction
+
+<figure>
+    <img src="image-18.png" alt="Membatalkan transaction" width="900">
+    <figcaption>Membatalkan transaction</figcaption>
+</figure>
+
+### Transaction di MySQL
+
+| Perintah          | Keterangan                                                                                                |
+| :---------------- | :-------------------------------------------------------------------------------------------------------- |
+| START TRANSACTION | Memulai proses transaksi, proses selanjutnya akan dianggap transaksi sampai perintah COMMIT atau ROLLBACK |
+| COMMIT            | Menyimpan secara permanen seluruh proses transaksi                                                        |
+| ROLLBACK          | Membatalkan secara permanen seluruh proses transaksi                                                      |
+
+### Yang Tidak Bisa Menggunakan Transaction
+
+-   Perintah DDL (Data Definition Language) tidak bisa menggunakan fitur transaction
+-   DDL adalah perintah-perintah yang digunakan untuk merubah struktur, seperti membuat tabel, menambah kolom, menghapus tabel, menghapus database, dan sejenisnya
+-   Transaction hanya bisa dilakukan pada perintah DML (Data Manipulation Language), seperti operasi INSERT, UPDATE dan DELETE
+
+## Locking
+
+### Locking
+
+-   Locking adalah proses mengunci data di DBMS
+-   Proses mengunci data sangat penting dilakukan, salah satunya agar data benar-benar terjamin konsistensinya
+-   Karena pada kenyataannya, aplikasi yang akan kita buat pasti digunakan oleh banyak pengguna, dan banyak pengguna tersebut bisa saja akan mengakses data yang sama, jika tidak ada proses locking, bisa dipastikan akan terjadi RACE CONDITION, yaitu proses balapan ketika mengubah data yang sama
+-   Contoh saja, ketika kita belanja di toko online, kita akan balapan membeli barang yang sama, jika data tidak terjaga, bisa jadi kita salah mengupdate stock karena pada saat yang bersamaan banyak yang melakukan perubahan stock barang
+
+### Locking Record
+
+-   Saat kita melakukan proses TRANSACTION, lalu kita melakukan proses perubahan data, data yang kita ubah tersebut akan secara otomatis di LOCK
+-   Hal ini membuat proses TRANSACTION sangat aman
+-   Oleh karena itu, sangat disarankan untuk selalu menggunakan fitur TRANSACTION ketika memanipulasi data di database, terutama ketika perintah manipulasinya lebih dari satu kali
+-   Locking ini akan membuat sebuah proses perubahan yang dilakukan oleh pihak lain akan diminta untuk menunggu
+-   Data akan di lock sampai kita melakukan COMMIT atau ROLLBACK transaksi tersebut
+
+### Locking Record Manual
+
+-   Selain secara otomatis, kadang saat kita membuat aplikasi, kita juga sering melakukan SELECT query terlebih dahulu sebelum melakukan proses UPDATE misalnya.
+-   Jika kita ingin melakukan locking sebuah data secara manual, kita bisa tambahkan perintah FOR UPDATE di belakang query SELECT
+-   Saat kita lock record yang kita select, maka jika ada proses lain akan melakukan UPDATE, DELETE atau SELECT FOR UPDATE lagi, maka proses lain diminta menunggu sampai kita selesai melakukan COMMIT atau ROLLBACK transaction
+
+### Deadlock
+
+-   Saat kita terlalu banyak melakukan proses Locking, hati-hati akan masalah yang bisa terjadi, yaitu DEADLOCK
+-   Deadlock adalah situasi ada 2 proses yang saling menunggu satu sama lain, namun data yang ditunggu dua-duanya di lock oleh proses lainnya, sehingga proses menunggunya ini tidak akan pernah selesai.
+
+### Contoh Deadlock
+
+-   Proses 1 melakukan SELECT FOR UPDATE untuk data 001
+-   Proses 2 melakukan SELECT FOR UPDATE untuk data 002
+-   Proses 1 melakukan SELECT FOR UPDATE untuk data 002, diminta menunggu karena di lock oleh Proses 2
+-   Proses 2 melakukan SELECT FOR UPDATE untuk data 001, diminta menunggu karena di lock oleh Proses 1
+-   Akhirnya Proses 1 dan Proses 2 saling menunggu
+-   Deadlock terjadi
+
+### Locking Table
+
+-   MySQL mendukung proses locking terhadap sebuah tabel
+-   Jika kita me lock table, artinya satu seluruh data di tabel tersebut akan di lock
+-   Ada 2 jenis lock table, yaitu READ dan WRITE
+-   Cara melakukan locking table adalah dengan perintah
+    -   LOCK TABLES nama_table READ;
+    -   LOCK TABLES nama_Table WRITE
+-   Setelah selesai melakukan lock table, kita bisa melakukan unlock dengan perintah : UNLOCK TABLES;
+
+### Behaviour Lock Tables
+
+| Perintah | Proses yang Melakukan Lock                            | Proses lain                                                                   |
+| :------- | :---------------------------------------------------- | :---------------------------------------------------------------------------- |
+| READ     | Hanya bisa melakukan read terhadap tabel tersebut     | Hanya bisa melakukan read terhadap tabel tersebut, tidak bisa melakukan write |
+| WRITE    | Bisa melakukan read dan write terhadap tabel tersebut | Tidak bisa melakukan read dan write                                           |
+
+### Locking Instance
+- Salah satu fitur lock lainnya di MySQL adalah lock instance
+- Lock instance adalah perintah locking yang akan membuat perintah DDL (data definition language) akan diminta menunggu sampai proses unlock instance
+- Biasanya proses locking instance ini terjadi ketika misal kita ingin melakukan backup data, agar tidak terjadi perubahan terhadap struktur tabel misalnya, kita bisa melakukan locking instance
+- Setelah proses backup selesai, baru kita unlock lagi instance nya
+- Untuk melakukan locking instance, kita bisa gunakan perintah :
+  - `LOCK INSTANCE FOR BACKUP`;
+- Untuk melakukan unlock instance, kita bisa gunakan perintah :
+  - `UNLOCK INSTANCE`;
+
+> Locking Instance masih bisa melakukan DML
+
+## User Management
+
+### Root User
+- Secara default, mysql membuat root user sebagai super administrator
+- Namun best practice nya, saat kita menjalankan MySQL dengan aplikasi yang kita buat, sangat disarankan tidak menggunakan user root
+- Lebih baik kita buat user khusus untuk tiap aplikasi, bahkan kita bisa batasi hak akses user tersebut, seperti hanya bisa melakukan SELECT, dan tidak boleh melakukan INSERT, UPDATE atau DELETE
+
+### Hak Akses dan User
+- Dalam user management MySQL, kita akan mengenal istilah Hak Akses dari User
+
+### Daftara Hak Akses
+- Ada banyak sekali hak akses di MySQL
+- Kita bisa melihatnya di daftar tabel yang terdapat di halaman berikut :
+- https://dev.mysql.com/doc/refman/8.0/en/grant.html 
+
+### Membuat / Menghapus User
+```sql
+CREATE USER 'eko'@'localhost';
+CREATE USER 'khannedy'@'%';         # best practice untuk % adalah mengganti dengan alamat IP user (dari VM)
+
+DROP USER 'eko'@'localhost';
+DROP USER 'khannedy'@'%';
+```
+
+### Menambah/Menghapus Hak Akses ke User
+```sql
+GRANT SELECT ON belajar_mysql.* TO 'eko'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE ON belajar_mysql.* TO 'khannedy'@'%';
+
+SHOW GRANTS FOR 'eko'@'localhost';
+SHOW GRANTS FOR 'khannedy'@'%';
+
+REVOKE SELECT ON belajar_mysql.* FROM 'eko'@'localhost';
+REVOKE SELECT, INSERT, UPDATE, DELETE ON belajar_mysql.* FROM 'khannedy'@'%';
+```
+
+### Mengubah Passsword untuk User
+```sql
+SET PASSWORD FOR 'eko'@'localhost' = 'rahasia';
+SET PASSWORD FOR 'khannedy'@'%' = 'rahasia';
+```
+
+## Backup Database
+
+### Backup Database
+- Saat membuat aplikasi menggunakan database, ada baiknya kita selalu melakukan backup data secara reguler
+- Untungnya MySQL mendukung proses backup database
+- Untuk melakukan backup database, kita tidak menggunakan perintah SQL, melainkan MySQL menyediakan sebuah aplikasi khusus untuk melakukan backup database, namanya adalah **mysqldump**
+- https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html 
+
+### Melakukan Backup Database
+<figure>
+    <img src="image-15.png" alt="Melakukan Backup Database" width="500">
+    <figcaption>Melakukan Backup Database</figcaption>
+</figure>
+
+## Restore Database
+
+### Restore Database
+- Selain melakukan backup database, di MySQL juga kita bisa melakukan proses restore data dari file hasil backup
+- Untuk melakukan restore database, kita bisa menggunakan aplikasi mysql client atau menggunakan perintah SOURCE di MySQL
+
+### Melakukan Import Database
+<figure>
+    <img src="image-16.png" alt="Melakukan Import Database" width="500">
+    <figcaption>Melakukan Import Database</figcaption>
+</figure>
+
+### Import Database Menggunakan SQL
+<figure>
+    <img src="image-17.png" alt="Import Database Menggunakan SQL" width="500">
+    <figcaption>Import Database Menggunakan SQL</figcaption>
+</figure>
+
+## Materi Selanjutnya
+
+### Materi Selanjutnya
+- Studi Kasus Database Design
+- Belajar Bahasa Pemrograman
+- MySQL Tuning
+- MySQL Scalability

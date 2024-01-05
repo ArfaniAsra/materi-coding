@@ -4,3 +4,5 @@ Isi Repo ini:
 1. pzn-belajar-basis-data-dasar
 2. pzn-tutorial-mysql-dasar
 3. pzn-tutorial-mongodb-dasar
+
+Best Practice: Taruh beberapa folder di branch main ini, agar terhitung sebagai contribution

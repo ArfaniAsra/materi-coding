@@ -1,0 +1,9 @@
+FROM alpine:3
+
+LABEL author="Muhammad Arfani Asra"
+LABEL company="Programmer Zaman Now" website="https://www.programmerzamannow.com/"
+
+RUN mkdir hello
+RUN echo "hello world" > hello/hello.txt
+
+CMD cat "hello/hello.txt"

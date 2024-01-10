@@ -1,0 +1,17 @@
+firstName: Muhammad
+middleName: Arfani
+lastName: Asra
+hobbies:
+  - Coding
+  - Reading
+  - Gaming
+address:
+  street: Jalan Kenangan
+  city: Jakarta
+  province: DKI Jakarta
+  country: Indonesia
+wallet:
+  - type: cast
+    mount: 100000
+  - type: debit
+    mount: 500000

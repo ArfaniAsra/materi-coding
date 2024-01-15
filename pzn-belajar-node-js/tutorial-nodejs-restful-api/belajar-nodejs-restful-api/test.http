@@ -1,0 +1,144 @@
+POST http://localhost:3000/api/users
+Content-Type: application/json
+Accept: application/json
+
+{
+    "username": "asra",
+    "password": "rahasia",
+    "name": "Muhammad Arfani Asra"
+}
+
+### 557ae978-023c-4d2f-9a35-a52cb828118d
+
+POST http://localhost:3000/api/users/login
+Content-Type: application/json
+Accept: application/json
+
+{
+    "username": "asra",
+    "password": "rahasia"
+}
+
+###
+
+GET http://localhost:3000/api/users/current
+Content-Type: application/json
+Accept: application/json
+Authorization: 557ae978-023c-4d2f-9a35-a52cb828118d
+
+###
+
+PATCH http://localhost:3000/api/users/current
+Content-Type: application/json
+Accept: application/json
+Authorization: 557ae978-023c-4d2f-9a35-a52cb828118d
+
+{
+    "name": "Andi Muhammad Arfani Asra"
+}
+
+###
+DELETE http://localhost:3000/api/users/logout
+Content-Type: application/json
+Accept: application/json
+Authorization: 557ae978-023c-4d2f-9a35-a52cb828118d
+
+###
+
+POST http://localhost:3000/api/contacts
+Content-Type: application/json
+Accept: application/json
+Authorization: 557ae978-023c-4d2f-9a35-a52cb828118d
+
+{
+    "first_name" : "Joko",
+    "last_name" : "Morro",
+    "email" : "joko@pzn.com",
+    "phone" : "081234567890"
+}
+
+###
+
+GET http://localhost:3000/api/contacts
+Content-Type: application/json
+Accept: application/json
+Authorization: 557ae978-023c-4d2f-9a35-a52cb828118d
+
+###
+
+GET http://localhost:3000/api/contacts/2887
+Content-Type: application/json
+Accept: application/json
+Authorization: 557ae978-023c-4d2f-9a35-a52cb828118d
+
+### Update
+
+PUT http://localhost:3000/api/contacts/2887
+Content-Type: application/json
+Accept: application/json
+Authorization: 557ae978-023c-4d2f-9a35-a52cb828118d
+
+{
+    "first_name": "Rully",
+    "last_name": "Nugraha",
+    "email": "rully@pzn.com",
+    "phone": "081234567890"
+}
+
+### Delete Contact
+
+DELETE http://localhost:3000/api/contacts/2887
+Content-Type: application/json
+Accept: application/json
+Authorization: 557ae978-023c-4d2f-9a35-a52cb828118d
+
+### Create Address
+
+POST http://localhost:3000/api/contacts/2886/addresses
+Content-Type: application/json
+Accept: application/json
+Authorization: 557ae978-023c-4d2f-9a35-a52cb828118d
+
+{
+    "street": "Kantor",
+    "city": "Jakarta",
+    "province": "Jawa Barat",
+    "country": "Indonesia",
+    "postal_code": "12345"
+}
+
+### List Addresses
+
+GET http://localhost:3000/api/contacts/2886/addresses
+Content-Type: application/json
+Accept: application/json
+Authorization: 557ae978-023c-4d2f-9a35-a52cb828118d
+
+### Get Address
+
+GET http://localhost:3000/api/contacts/2886/addresses/395
+Content-Type: application/json
+Accept: application/json
+Authorization: 557ae978-023c-4d2f-9a35-a52cb828118d
+
+### Update Address
+
+PUT http://localhost:3000/api/contacts/2886/addresses/395
+Content-Type: application/json
+Accept: application/json
+Authorization: 557ae978-023c-4d2f-9a35-a52cb828118d
+
+{
+    "street": "Kantor Bekerja",
+    "city": "Tangerang",
+    "province": "Banten",
+    "country": "Indonesia",
+    "postal_code": "12345"
+}
+
+### Remove Address
+
+DELETE http://localhost:3000/api/contacts/2886/addresses/395
+Content-Type: application/json
+Accept: application/json
+Authorization: 557ae978-023c-4d2f-9a35-a52cb828118d

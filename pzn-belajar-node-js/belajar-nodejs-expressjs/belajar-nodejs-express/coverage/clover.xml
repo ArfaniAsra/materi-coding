@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1703489736855" clover="3.2.0">
+  <project timestamp="1703489736855" name="All files">
+    <metrics statements="7" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="0" elements="10" coveredelements="0" complexity="0" loc="7" ncloc="7" packages="1" files="1" classes="1"/>
+    <file name="hello.js" path="D:\Programs\pzn\belajar-node-js\belajar-nodejs-expressjs\belajar-nodejs-express\src\hello.js">
+      <metrics statements="7" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="0"/>
+      <line num="3" count="0" type="stmt"/>
+      <line num="5" count="0" type="stmt"/>
+      <line num="6" count="0" type="stmt"/>
+      <line num="9" count="0" type="stmt"/>
+      <line num="10" count="0" type="stmt"/>
+      <line num="13" count="0" type="stmt"/>
+      <line num="14" count="0" type="stmt"/>
+    </file>
+  </project>
+</coverage>
